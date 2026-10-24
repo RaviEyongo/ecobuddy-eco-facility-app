@@ -1,0 +1,174 @@
+<?php require('template/header.phtml') ?>
+
+    <h3>Welcome to ecoBuddy</h3>
+
+    <!-- Check if a user is logged in and is an admin-->
+<?php if (isset($_SESSION['userType']) && $_SESSION['userType'] == 1): ?>
+    <!-- Add the Facility button for Admin -->
+    <a href="addFacility.php" class="btn btn-success mb-3">Add New Facility</a>
+<?php endif; ?>
+
+    <!-- Search Form -->
+    <h2>Search for an Eco-Facility</h2>
+    <form method="get" action="index.php">
+        <div class="form-group">
+            <input type="text" id="liveSearchInput" name="query" placeholder="Search facilities..." autocomplete="off"
+                   value="<?= htmlspecialchars($_GET['query'] ?? '') ?>" class="form-control w-25 d-inline">
+
+            <!-- Container for Live Search Results -->
+            <div id="searchResults" class="list-group w-50 position-absolute bg-white"></div>
+
+            <!-- Category dropdown-->
+            <select name="category" class="form-control w-25 d-inline">
+                <option value="">All Categories</option>
+                <option value="1" <?= ($_GET['category'] ?? '') == '1' ? 'selected' : '' ?>>1</option>
+                <option value="2" <?= ($_GET['category'] ?? '') == '2' ? 'selected' : '' ?>>2</option>
+                <option value="3" <?= ($_GET['category'] ?? '') == '3' ? 'selected' : '' ?>>3</option>
+                <option value="4" <?= ($_GET['category'] ?? '') == '3' ? 'selected' : '' ?>>4</option>
+                <option value="5" <?= ($_GET['category'] ?? '') == '3' ? 'selected' : '' ?>>5</option>
+                <option value="6" <?= ($_GET['category'] ?? '') == '3' ? 'selected' : '' ?>>6</option>
+                <option value="7" <?= ($_GET['category'] ?? '') == '3' ? 'selected' : '' ?>>7</option>
+                <option value="8" <?= ($_GET['category'] ?? '') == '3' ? 'selected' : '' ?>>8</option>
+                <option value="9" <?= ($_GET['category'] ?? '') == '3' ? 'selected' : '' ?>>9</option>
+                <option value="10" <?= ($_GET['category'] ?? '') == '3' ? 'selected' : '' ?>>10</option>
+                <option value="11" <?= ($_GET['category'] ?? '') == '3' ? 'selected' : '' ?>>11</option>
+                <option value="12" <?= ($_GET['category'] ?? '') == '3' ? 'selected' : '' ?>>12</option>
+                <option value="13" <?= ($_GET['category'] ?? '') == '3' ? 'selected' : '' ?>>13</option>
+
+            </select>
+            <!--- Submit search button-->
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    <!-- Display DB Messages if needed -->
+<?php if (!empty($view->dbMessage)): ?>
+    <p class="text-danger"><?= htmlspecialchars($view->dbMessage) ?></p>
+<?php endif; ?>
+
+    <!-- Leaflet Map : CSS/JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Map Container -->
+    <div id="mapDiv" style="height:500px"></div>
+
+    <!-- Facilities Table -->
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Address</th>
+            <th>Location</th>
+            <th>Contributor</th>
+            <th>Status</th>
+            <!-- Admin Actions -->
+            <?php if (isset($_SESSION['userType']) && $_SESSION['userType'] == 1): ?>
+                <th>Actions</th>
+            <?php endif; ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($view->ecoFacilities as $ecoFacilityData): ?>
+            <tr>
+                <td><?= htmlspecialchars($ecoFacilityData->getID()); ?></td>
+                <td><?= htmlspecialchars($ecoFacilityData->getTitle()); ?></td>
+                <td><?= htmlspecialchars($ecoFacilityData->getCategory()); ?></td>
+                <td><?= htmlspecialchars($ecoFacilityData->getDescription()); ?></td>
+                <td>
+                    <?= htmlspecialchars($ecoFacilityData->getHouseNumber() . " " . $ecoFacilityData->getStreetName() . ", " .
+                        $ecoFacilityData->getTown() . ", " . $ecoFacilityData->getCounty() . " - " . $ecoFacilityData->getPostcode()); ?>
+                </td>
+                <td>
+                    <?= "Longitude: " . htmlspecialchars($ecoFacilityData->getLongitude()) . ", Latitude: " . htmlspecialchars($ecoFacilityData->getLatitude()); ?>
+                </td>
+                <td><?= htmlspecialchars($ecoFacilityData->getContributor()); ?></td>
+                <td><?= htmlspecialchars($ecoFacilityData->getStatus()); ?></td>
+                <!-- Admin Actions -->
+                <?php if (isset($_SESSION['userType']) && $_SESSION['userType'] == 1): ?>
+                    <td>
+                        <a href="editFacility.php?id=<?= htmlspecialchars($ecoFacilityData->getID()); ?>" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="deleteFacility.php?id=<?= htmlspecialchars($ecoFacilityData->getID()); ?>" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                <?php endif; ?>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <div>
+        <p>Page <?= $view->currentPage ?> of <?= $view->totalPages ?></p>
+        <nav>
+            <ul class="pagination">
+                <!-- Previous page Link -->
+                <?php if ($view->currentPage > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?= $view->currentPage - 1 ?>&query=<?= urlencode($_GET['query'] ?? '') ?>&category=<?= urlencode($_GET['category'] ?? '') ?>">
+                            Previous
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <!-- Page number links -->
+                <?php for ($i = 1; $i <= $view->totalPages; $i++): ?>
+                    <li class="page-item <?= $i == $view->currentPage ? 'active' : '' ?>">
+                        <a class="page-link" href="?page=<?= $i ?>&query=<?= urlencode($_GET['query'] ?? '') ?>&category=<?= urlencode($_GET['category'] ?? '') ?>">
+                            <?= $i ?>
+                        </a>
+                    </li>
+                <?php endfor; ?>
+
+                <!-- Next Page Link -->
+                <?php if ($view->currentPage < $view->totalPages): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?= $view->currentPage + 1 ?>&query=<?= urlencode($_GET['query'] ?? '') ?>&category=<?= urlencode($_GET['category'] ?? '') ?>">
+                            Next
+                        </a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- map.js -->
+    <script src="js/map.js"></script>
+
+    <!--liveSearch.js -->
+    <script src="js/liveSearch.js"></script>
+
+    <!-- Live seracch script  -->
+    <script>
+        document.getElementById('liveSearchInput').addEventListener('input', function() {
+            const query = this.value.trim();
+            //Hide results box if input is empty
+            if (query === '') {
+                document.getElementById('searchResults').innerHTML = '';
+                document.getElementById('searchResults').style.display = 'none';
+                return;
+            }
+
+            //If input is valid, fetch and show live results
+            if (LiveSearch.validateInput(query)) {
+                LiveSearch.fetchResults(query, function(error, data) {
+                    if (error) {
+                        console.error("Fetching error:", error);
+                        document.getElementById('searchResults').innerHTML = '<div class="list-group-item text-danger">Error loading results</div>';
+                        document.getElementById('searchResults').style.display = 'block';
+                        return;
+                    }
+                    LiveSearch.renderResults(data);
+                    document.getElementById('searchResults').style.display = 'block';
+                });
+            } else {
+                //Show validation error message
+                document.getElementById('searchResults').innerHTML = '<div class="list-group-item text-warning">Invalid input detected.</div>';
+                document.getElementById('searchResults').style.display = 'block';
+            }
+        });
+    </script>
+
+<?php require('template/footer.phtml') ?>

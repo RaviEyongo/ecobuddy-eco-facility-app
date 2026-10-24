@@ -1,0 +1,31 @@
+<?php require('template/header.phtml') ?>
+
+<h3>Login</h3>
+
+<?php if (isset($error)) : ?>
+    <p style="color: red;"><?php echo $error; ?></p>
+<?php endif; ?>
+
+<?php
+//checks if the user can login to print out the followig
+if (!isset($_SESSION["login"])) {
+    echo ' 
+            <form method="post" action="" class="form text-primary">
+                <label for="username">Username</label>
+                <input type="text" name="username">
+                <label for="password" >Password</label>
+                <input type="password" name="password">
+                <input type="submit" name="loginbutton" value="Login">
+
+            </form>';
+}
+else
+{
+    echo '
+            <form method="post" action="" class="form text-primary">
+                <input type="submit" name="logoutbutton" value="Logout">
+            </form>';
+}
+?>
+
+<?php require('template/footer.phtml') ?>

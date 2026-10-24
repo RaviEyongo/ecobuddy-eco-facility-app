@@ -1,0 +1,131 @@
+<?php require('template/header.phtml'); ?>
+<!-- Include the header template -->
+
+<h3>Edit Eco-Facility</h3>
+
+<!-- Display error message if any -->
+<?php if (isset($view->errorMessage) && !empty($view->errorMessage)): ?>
+    <div class="alert alert-danger">
+        <?= htmlspecialchars($view->errorMessage, ENT_QUOTES); ?>
+    </div>
+<?php endif; ?>
+
+<form method="post" action="editFacility.php?id=<?= htmlspecialchars($facility->getID(), ENT_QUOTES); ?>">
+    <!-- Hidden field to include the facility ID -->
+    <input type="hidden" name="id" value="<?= htmlspecialchars($facility->getID(), ENT_QUOTES); ?>">
+
+    <!-- Input fields for each facility attribute -->
+    <label for="title">Title:</label>
+    <input
+            type="text"
+            id="title"
+            name="title"
+            value="<?= htmlspecialchars($facility->getTitle(), ENT_QUOTES); ?>"
+            required
+    >
+    <br><br>
+
+    <label for="category">Category:</label>
+    <input
+            type="text"
+            id="category"
+            name="category"
+            value="<?= htmlspecialchars($facility->getCategory(), ENT_QUOTES); ?>"
+            required
+    >
+    <br><br>
+
+    <label for="description">Description:</label>
+    <textarea
+            id="description"
+            name="description"
+            required
+    ><?= htmlspecialchars($facility->getDescription(), ENT_QUOTES); ?></textarea>
+    <br><br>
+
+    <label for="houseNumber">House Number:</label>
+    <input
+            type="text"
+            id="houseNumber"
+            name="houseNumber"
+            value="<?= htmlspecialchars($facility->getHouseNumber(), ENT_QUOTES); ?>"
+            required
+    >
+    <br><br>
+
+    <label for="streetName">Street Name:</label>
+    <input
+            type="text"
+            id="streetName"
+            name="streetName"
+            value="<?= htmlspecialchars($facility->getStreetName(), ENT_QUOTES); ?>"
+            required
+    >
+    <br><br>
+
+    <label for="county">County:</label>
+    <input
+            type="text"
+            id="county"
+            name="county"
+            value="<?= htmlspecialchars($facility->getCounty(), ENT_QUOTES); ?>"
+            required
+    >
+    <br><br>
+
+    <label for="town">Town:</label>
+    <input
+            type="text"
+            id="town"
+            name="town"
+            value="<?= htmlspecialchars($facility->getTown(), ENT_QUOTES); ?>"
+            required
+    >
+    <br><br>
+
+    <label for="postcode">Postcode:</label>
+    <input
+            type="text"
+            id="postcode"
+            name="postcode"
+            value="<?= htmlspecialchars($facility->getPostcode(), ENT_QUOTES); ?>"
+            required
+    >
+    <br><br>
+
+    <label for="longitude">Longitude:</label>
+    <input
+            type="text"
+            id="longitude"
+            name="longitude"
+            value="<?= htmlspecialchars($facility->getLongitude(), ENT_QUOTES); ?>"
+            required
+    >
+    <br><br>
+
+    <label for="latitude">Latitude:</label>
+    <input
+            type="text"
+            id="latitude"
+            name="latitude"
+            value="<?= htmlspecialchars($facility->getLatitude(), ENT_QUOTES); ?>"
+            required
+    >
+
+    <br><br>
+
+    <label for="status">Status:</label>
+    <input
+            type="text"
+            id="status"
+            name="status"
+            value="<?= htmlspecialchars($facility->getStatus(), ENT_QUOTES); ?>"
+            required
+    >
+
+    <br><br>
+
+    <!-- Submit Button -->
+    <button type="submit" name="updateFacility">Update Facility</button>
+    <button type="button" onclick="window.location.href='index.php';">Cancel</button>
+</form>
