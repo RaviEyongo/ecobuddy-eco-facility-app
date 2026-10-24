@@ -60,8 +60,8 @@ You can also place the folder inside the `htdocs` folder of XAMPP and open it th
 
 | Username | Password | Role |
 | --- | --- | --- |
-| [add test username] | [add test password] | Manager |
-| [add test username] | [add test password] | User |
+| admin | G7!fY8mZ$2k@PwR4  | admin
+| lee | H7k@M2!jXwY9r&Lp  | User |
 
 ## Author
 
